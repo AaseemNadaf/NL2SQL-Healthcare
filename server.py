@@ -1,13 +1,29 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from db_connector import run_query, get_table_preview, get_table_row_counts, is_safe_query
+from db_connector import run_query, get_table_preview, get_table_row_counts, is_safe_query, test_connection
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route("/")
+def index():
+    return send_from_directory(".", "index.html")
+
+
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    return send_from_directory("static", filename)
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    ok, msg = test_connection()
+    return jsonify({"status": "ok" if ok else "error", "message": msg})
 
 
 @app.route("/api/execute", methods=["POST"])
@@ -31,8 +47,8 @@ def execute():
 
     return jsonify({
         "columns": list(df.columns),
-        "rows":    df.values.tolist(),
-        "count":   len(df)
+        "rows"   : df.values.tolist(),
+        "count"  : len(df),
     })
 
 
@@ -51,15 +67,8 @@ def preview(table_name):
         return jsonify({"columns": [], "rows": []})
     return jsonify({
         "columns": list(df.columns),
-        "rows":    df.values.tolist()
+        "rows"   : df.values.tolist(),
     })
-
-
-@app.route("/api/health", methods=["GET"])
-def health():
-    from db_connector import test_connection
-    ok, msg = test_connection()
-    return jsonify({"status": "ok" if ok else "error", "message": msg})
 
 
 if __name__ == "__main__":

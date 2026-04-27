@@ -1,11 +1,3 @@
-"""
-schema.py
----------
-Healthcare DB schema definition as a structured string.
-This is injected into the Claude system prompt so the LLM
-knows the exact table/column structure before generating SQL.
-"""
-
 HEALTHCARE_SCHEMA = """
 DATABASE: mediquery_db (MySQL 8.0)
 
@@ -125,7 +117,6 @@ NOTES FOR QUERY GENERATION:
   - For partial name matches use LIKE '%value%'
 """
 
-# ── Quick lookup: table → column names (used by schema viewer in UI) ──────────
 TABLE_COLUMNS = {
     "patients": [
         "patient_id", "first_name", "last_name", "date_of_birth",
@@ -164,7 +155,6 @@ TABLE_COLUMNS = {
     ],
 }
 
-# ── Sample prompts shown in the UI to guide users ─────────────────────────────
 SAMPLE_PROMPTS = [
     "Show all patients from Pune with their age",
     "List all appointments scheduled for December 2024",
